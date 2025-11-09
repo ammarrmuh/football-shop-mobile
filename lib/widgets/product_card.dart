@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_shop/screens/productentry_form.dart';
 
 class ItemHomepage {
   final String name;
@@ -29,6 +30,16 @@ class ItemCard extends StatelessWidget {
                 duration: const Duration(seconds: 2),
               ),
             );
+
+          // Navigasi ke halaman yang sesuai
+          if (item.name == "Create Product") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProductEntryFormPage(),
+              ),
+            );
+          }
         },
         child: Container(
           padding: const EdgeInsets.all(8),
