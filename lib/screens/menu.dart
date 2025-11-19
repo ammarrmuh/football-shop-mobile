@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:football_shop/widgets/product_card.dart';
+import 'package:football_shop/widgets/left_drawer.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
 
-  final String npm = '2406495602'; 
-  final String name = 'Ammar Muhammad Rafif'; 
-  final String className = 'PBP C'; 
+  final String npm = '2406495602';
+  final String name = 'Ammar Muhammad Rafif';
+  final String className = 'PBP C';
 
   // List item dengan warna berbeda untuk setiap tombol
   final List<ItemHomepage> items = [
-    ItemHomepage("All Products", Icons.shopping_bag, Colors.blue),
-    ItemHomepage("My Products", Icons.inventory, Colors.green),
-    ItemHomepage("Create Product", Icons.add_circle, Colors.red),
+    ItemHomepage("All Products",Icons.shopping_bag,Colors.blue,const Color.fromRGBO(0, 0, 0, 1),),
+    ItemHomepage("My Products", Icons.inventory, Colors.green,const Color.fromARGB(255, 238, 24, 24),),
+    ItemHomepage("Create Product", Icons.add_circle, Colors.red, Colors.black),
   ];
 
   @override
@@ -21,13 +22,11 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Football Shop',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
+      drawer: const LeftDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -59,7 +58,7 @@ class MyHomePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  
+
                   // Grid untuk menampilkan ItemCard
                   GridView.count(
                     primary: true,
@@ -97,10 +96,7 @@ class InfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8.0),
             Text(content),
           ],

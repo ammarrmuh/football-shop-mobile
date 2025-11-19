@@ -1,28 +1,30 @@
- 1. Jelaskan perbedaan antara Navigator.push() dan Navigator.pushReplacement() pada Flutter. Dalam kasus apa sebaiknya masing-masing digunakan pada         aplikasi Football Shop kamu?
+Tugas 9
 
-    Navigator push = baut nambah halaman baru di atas halaman saat ini
-    Navigator pushReplacement = ngeganti halaman saat ini dengan halaman baru
+1. Jelaskan mengapa kita perlu membuat model Dart saat mengambil/mengirim data JSON? Apa konsekuensinya jika langsung memetakan Map<String, dynamic> tanpa model (terkait validasi tipe, null-safety, maintainability)?
 
-    kalo dalam implementasi di football shop itu buat misal mau create product itu better pake push aja karena buat ngebikin page baru yang dimana nanti kalo mau back bakal bisa ke homenya lagi
+Ketika kita berkomunikasi menggunakan JSON antara Flutter dan Django, model Dart dibutuhkan untuk memastikan data punya struktur dan tipe yang jelas. Model membantu kita menjaga konsistensi tipe, mengatur nilai yang boleh null atau tidak, dan memusatkan seluruh logika parsing di satu tempat. Tanpa model dan hanya memakai Map<String, dynamic>, setiap bagian kode harus mengakses key secara manual, melakukan casting satu per satu, dan memeriksa null secara manual. Hal seperti ini mudah menyebabkan error runtime ketika tipe tidak sesuai atau key tidak ada. Selain itu, kode jadi makin sulit dirawat karena kalau backend mengubah struktur JSON, kita harus memeriksa seluruh penggunaan map di berbagai file, sementara dengan model cukup memperbarui satu kelas.
 
-    kalo push replacement di set buat ke halaman utama karena itu kan akar dari semua kita mau kemana jadi gapapa push replacement aja
+2. Apa fungsi package http dan CookieRequest dalam tugas ini? Jelaskan perbedaan peran http vs CookieRequest.
 
- 2. Bagaimana kamu memanfaatkan hierarchy widget seperti Scaffold, AppBar, dan Drawer untuk membangun struktur halaman yang konsisten di seluruh aplikasi?
+Package http berfungsi sebagai alat dasar untuk membuat request HTTP seperti GET, POST, PUT, dan DELETE. Ia menangani body, header, dan menerima response dasar. CookieRequest berperan lebih khusus, yaitu mengelola cookie session dan CSRF yang digunakan Django. CookieRequest menyimpan cookie hasil login, mengirimkannya kembali secara otomatis, dan mengatur token CSRF agar request yang membutuhkan proteksi bisa dijalankan tanpa error. Perbedaannya adalah http hanya menyediakan akses HTTP mentah, sementara CookieRequest menyediakan mekanisme autentikasi yang lebih lengkap dan stateful yang cocok dengan Django yang menggunakan session dan CSRF.
 
-    pertama pake scaffold dulu yang dimana dia itu kan kerangka daasarnya di setiap halaman karena dia nyediain appbar, body, sama drawer
-    barulah habis scaffold kita pake app bar buat nampilin judul, ikon navigasinya, terus baru pake drawer buat nge navigisiin benerannya
+3. Jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
 
- 3. Dalam konteks desain antarmuka, apa kelebihan menggunakan layout widget seperti Padding, SingleChildScrollView, dan ListView saat menampilkan   elemen-elemen form? Berikan contoh penggunaannya dari aplikasi kamu.
+Instance CookieRequest perlu dibagikan ke seluruh komponen Flutter karena ia menyimpan state autentikasi pengguna seperti session cookie dan informasi apakah user sedang login atau tidak. Jika setiap halaman membuat instance CookieRequest baru, cookie tidak akan terbagi sehingga ada bagian app yang mengira user sudah login, sementara bagian lain menganggap belum. Dengan satu instance yang sama, semua halaman menggunakan session yang sama, dan perubahan status login bisa langsung memengaruhi seluruh UI secara konsisten.
 
- padding = buat ngasih jarak antar elemen biar looksnya nanti lebih rapoi sama enak dibacanya
-    contoh: di tempat bagian infocard buat ngenampilin nama, npm, sama kelas
+4. Jelaskan konfigurasi konektivitas yang diperlukan agar Flutter dapat berkomunikasi dengan Django. Mengapa kita perlu menambahkan 10.0.2.2 pada ALLOWED_HOSTS, mengaktifkan CORS dan pengaturan SameSite/cookie, dan menambahkan izin akses internet di Android? Apa yang akan terjadi jika konfigurasi tersebut tidak dilakukan dengan benar?
 
- singlechildscrollview = buat bikin biar bisa di scroll tampilannya 
-    contoh: di form buat nambahin produk
+Agar Flutter bisa berkomunikasi dengan Django, kita perlu melakukan beberapa konfigurasi. Django harus memasukkan 10.0.2.2 ke ALLOWED_HOSTS karena Android emulator tidak bisa mengakses localhost server host secara langsung, sehingga 10.0.2.2 menjadi jembatan antara emulator dan server lokal. Django juga membutuhkan CORS diaktifkan agar request dari aplikasi Flutter diizinkan, karena defaultnya Django menolak permintaan cross-origin. Untuk autentikasi berbasis cookie, Django harus mengatur SameSite, CORS_ALLOW_CREDENTIALS, dan cookie agar dapat dikirim dalam request. Di sisi Flutter (Android), izin akses internet wajib ditambahkan agar aplikasi bisa membuat koneksi jaringan. Jika ada salah satu konfigurasi yang salah, request bisa ditolak, cookie tidak terkirim, atau aplikasi tidak bisa menghubungi server sama sekali.
 
- listview = buat nampilin daftar elemen yang sifatnya dinamis
-    conbtoh: di bagian drawer
+5. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
 
- 4. Bagaimana kamu menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten dengan brand toko?
-    untuk ini karena saya nggak menggunakan brand manapun sehingga saya menggantinya untuk mengikuti football shop yang sudah saya bikin pada django
-    kita disini bermain di main.dart dmana kita ganti coloschemenya yang awalnya dari primary swatch jadi fromSeed, hal ini dilakukan karena kalo fromseed itu dia juga otomatis nge generate primary, secondary, tertiary, background, surface, etc juga buat warnanya jadi nanti M3 tonenya bakal lebih harmoni atau sesuai satu sama lain
+Alur pengiriman data dimulai dari input di Flutter, misalnya ketika pengguna mengisi form. Flutter mengumpulkan nilai input, membentuk data model, dan mengubahnya menjadi JSON melalui metode toJson. Data ini dikirim ke Django melalui request POST. Django menerima JSON, memvalidasi data, menyimpannya ke database, lalu mengirim kembali JSON hasil atau status. Flutter menerima JSON tersebut, mem-parsingnya menjadi objek model Dart melalui fromJson, kemudian memperbarui state sehingga data muncul pada UI. Siklus ini terus digunakan untuk menambah data, menampilkan daftar data, atau memperbarui data.
+
+6. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+
+Pada mekanisme autentikasi, pengguna mulai dengan mengisi form login atau register di Flutter. Flutter mengirim data tersebut ke Django. Ketika register, Django membuat akun baru dan mengirimkan status berhasil. Ketika login, Django memvalidasi username dan password; jika benar, Django membuat session dan mengirimkan cookie session dan CSRF token kepada Flutter. CookieRequest menyimpan cookie tersebut dan memakainya pada request berikutnya sehingga Django mengenali user yang sudah login. UI Flutter kemudian menampilkan halaman menu atau dashboard sesuai status login. Untuk logout, Flutter memanggil endpoint logout Django, dan Django menghapus session lalu mengembalikan cookie kosong. CookieRequest memperbarui state sehingga Flutter mengetahui bahwa user sudah keluar.
+
+7. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial).
+
+pertama kita setup integrasi autentikasi pada django dulu dan menginstall beberapa package yang nanti akan membantu kita, untuk autentikasi awal kita setup bagian login, setelah setup di django kita kemudian setup pada sisi flutternya dengan membuat login.dart , kita kemudian modifikasi views pada sisi django kita. jika sudah kita membuat register pada dart kemudian set supaya saat login misal blm punya akun bisa ke direct ke register dulu.
+kemudian kita buat model kustom dan memanfaatkan quicktype untuk mengconvert secara cepat ke dalam dart. setelah hal itu dilakukan kemudian kita integrate data django dengan flutter, kita integrasikan juga formnya, lalu kita set supaya dalam flutter terdapat filtrasi antara all product dan my product, kemudian yang terakhir adalah fitur logout. 
